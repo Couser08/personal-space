@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { UserProfile } from '../../types/common.types';
-import { loadFromStorage, saveToStorage } from '../../utils/storage';
+import { loadFromStorage, saveToStorage, removeFromStorage } from '../../utils/storage';
 
 interface AuthState {
   user: UserProfile | null;
@@ -8,17 +8,11 @@ interface AuthState {
   isLoading: boolean;
 }
 
-const initialProfile: UserProfile = loadFromStorage<UserProfile>('user_profile', {
-  id: 'local-user',
-  email: 'rahul@personal.space',
-  fullName: 'Rahul',
-  dailyQuote: 'Small steps every day. Big changes over time. 🌿',
-  themePreference: 'light',
-});
+const savedProfile = loadFromStorage<UserProfile | null>('user_profile', null);
 
 const initialState: AuthState = {
-  user: initialProfile,
-  isAuthenticated: false,
+  user: savedProfile,
+  isAuthenticated: !!savedProfile,
   isLoading: false,
 };
 
@@ -31,6 +25,8 @@ export const authSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       if (action.payload) {
         saveToStorage('user_profile', action.payload);
+      } else {
+        removeFromStorage('user_profile');
       }
     },
     updateProfile: (state, action: PayloadAction<Partial<UserProfile>>) => {
@@ -43,8 +39,9 @@ export const authSlice = createSlice({
       state.isLoading = action.payload;
     },
     logout: (state) => {
-      state.user = initialProfile;
+      state.user = null;
       state.isAuthenticated = false;
+      removeFromStorage('user_profile');
     },
   },
 });

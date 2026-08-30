@@ -13,6 +13,9 @@ interface UIState {
   activeTab: NavTab;
   theme: ThemeMode;
   isSidebarCollapsed: boolean;
+  isMoreMenuOpen: boolean;
+  isQuoteModalOpen: boolean;
+  isSearchPaletteOpen: boolean;
   isAuthModalOpen: boolean;
   isTaskModalOpen: boolean;
   isNoteModalOpen: boolean;
@@ -40,6 +43,9 @@ const initialState: UIState = {
   activeTab: 'home',
   theme: initialTheme,
   isSidebarCollapsed: initialSidebarCollapsed,
+  isMoreMenuOpen: false,
+  isQuoteModalOpen: false,
+  isSearchPaletteOpen: false,
   isAuthModalOpen: false,
   isTaskModalOpen: false,
   isNoteModalOpen: false,
@@ -55,6 +61,7 @@ export const uiSlice = createSlice({
   reducers: {
     setActiveTab: (state, action: PayloadAction<NavTab>) => {
       state.activeTab = action.payload;
+      state.isMoreMenuOpen = false;
     },
     setTheme: (state, action: PayloadAction<ThemeMode>) => {
       state.theme = action.payload;
@@ -90,6 +97,30 @@ export const uiSlice = createSlice({
     setSidebarCollapsed: (state, action: PayloadAction<boolean>) => {
       state.isSidebarCollapsed = action.payload;
       saveToStorage('sidebar_collapsed', action.payload);
+    },
+    openMoreMenu: (state) => {
+      state.isMoreMenuOpen = true;
+    },
+    closeMoreMenu: (state) => {
+      state.isMoreMenuOpen = false;
+    },
+    toggleMoreMenu: (state) => {
+      state.isMoreMenuOpen = !state.isMoreMenuOpen;
+    },
+    openQuoteModal: (state) => {
+      state.isQuoteModalOpen = true;
+    },
+    closeQuoteModal: (state) => {
+      state.isQuoteModalOpen = false;
+    },
+    openSearchPalette: (state) => {
+      state.isSearchPaletteOpen = true;
+    },
+    closeSearchPalette: (state) => {
+      state.isSearchPaletteOpen = false;
+    },
+    toggleSearchPalette: (state) => {
+      state.isSearchPaletteOpen = !state.isSearchPaletteOpen;
     },
     openAuthModal: (state) => {
       state.isAuthModalOpen = true;
@@ -139,6 +170,14 @@ export const {
   toggleTheme,
   toggleSidebarCollapse,
   setSidebarCollapsed,
+  openMoreMenu,
+  closeMoreMenu,
+  toggleMoreMenu,
+  openQuoteModal,
+  closeQuoteModal,
+  openSearchPalette,
+  closeSearchPalette,
+  toggleSearchPalette,
   openAuthModal,
   closeAuthModal,
   openTaskModal,

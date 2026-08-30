@@ -53,19 +53,14 @@ export const Sidebar: React.FC = () => {
       initial={false}
       animate={{ width: isCollapsed ? 80 : 256 }}
       transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-      className="shrink-0 h-screen sticky top-0 flex flex-col justify-between p-4 bg-white dark:bg-[#1A1F21] border-r border-[#EEF0EC] dark:border-[#273033] select-none z-20 overflow-hidden"
+      className="hidden md:flex shrink-0 h-screen sticky top-0 flex-col justify-between p-4 bg-white dark:bg-[#1A1F21] border-r border-[#EEF0EC] dark:border-[#273033] select-none z-20 overflow-hidden"
     >
       <div className="space-y-6">
-        {/* Brand Logo & Collapse Toggle Header */}
+        {/* Brand Logo & Collapse Toggle */}
         <div className="flex items-center justify-between px-1.5 py-1">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-10 h-10 rounded-2xl bg-[#EAF2EC] dark:bg-[#1E2E23] flex items-center justify-center text-[#6BAA7A] shrink-0 shadow-xs">
-              <svg viewBox="0 0 40 40" className="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 28V16" stroke="#6BAA7A" strokeWidth="2.5" strokeLinecap="round"/>
-                <path d="M20 22C16 22 13 18 14 14C18 14 20 17 20 22Z" fill="#6BAA7A" fillOpacity="0.85"/>
-                <path d="M20 18C24 18 27 15 26 11C22 11 20 14 20 18Z" fill="#C7C9F5" fillOpacity="0.9"/>
-                <circle cx="20" cy="12" r="1.5" fill="#6BAA7A"/>
-              </svg>
+              🌿
             </div>
             
             <AnimatePresence mode="popLayout">
@@ -124,14 +119,9 @@ export const Sidebar: React.FC = () => {
                 </span>
 
                 {!isCollapsed && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="truncate whitespace-nowrap"
-                  >
+                  <span className="truncate whitespace-nowrap">
                     {item.label}
-                  </motion.span>
+                  </span>
                 )}
               </button>
             );
@@ -139,7 +129,7 @@ export const Sidebar: React.FC = () => {
         </nav>
       </div>
 
-      {/* Botanical Quote Card (only shown when expanded) */}
+      {/* Botanical Quote Card */}
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div

@@ -17,6 +17,14 @@ export const saveToStorage = <T>(key: string, value: T): void => {
   }
 };
 
+export const removeFromStorage = (key: string): void => {
+  try {
+    localStorage.removeItem(`${STORAGE_PREFIX}${key}`);
+  } catch (error) {
+    console.error(`Failed to remove ${key} from localStorage:`, error);
+  }
+};
+
 export const clearLocalStorage = (): void => {
   try {
     Object.keys(localStorage).forEach((key) => {

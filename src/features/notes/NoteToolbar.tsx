@@ -86,16 +86,16 @@ export const NoteToolbar: React.FC<NoteToolbarProps> = memo(({
   ] as const;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-[#FAFBF9] dark:bg-[#161B1D] rounded-xl border border-[#EEF0EC] dark:border-[#273033] select-none">
-      {/* Formatting Action Icons */}
-      <div className="flex flex-wrap items-center gap-0.5">
+    <div className="flex items-center justify-between gap-2 p-1.5 sm:p-2 bg-[#FAFBF9] dark:bg-[#161B1D] rounded-xl border border-[#EEF0EC] dark:border-[#273033] select-none">
+      {/* Formatting Action Icons with smooth horizontal swipe on mobile */}
+      <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar py-0.5 max-w-[calc(100%-110px)] sm:max-w-none">
         {tools.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => handleAction(t.id)}
             title={t.label}
-            className="p-1.5 rounded-lg text-[#4F5D75] dark:text-[#9CA3AF] hover:text-[#1F2937] dark:hover:text-white hover:bg-white dark:hover:bg-[#202528] hover:shadow-2xs transition-all cursor-pointer"
+            className="p-1.5 rounded-lg text-[#4F5D75] dark:text-[#9CA3AF] hover:text-[#1F2937] dark:hover:text-white hover:bg-white dark:hover:bg-[#202528] hover:shadow-2xs transition-all cursor-pointer shrink-0"
           >
             {t.icon}
           </button>
@@ -103,7 +103,7 @@ export const NoteToolbar: React.FC<NoteToolbarProps> = memo(({
       </div>
 
       {/* View Mode Switcher (Edit / Split / Preview) */}
-      <div className="flex items-center gap-1 bg-white dark:bg-[#202528] p-0.5 rounded-lg border border-[#EEF0EC] dark:border-[#273033]">
+      <div className="flex items-center gap-1 bg-white dark:bg-[#202528] p-0.5 rounded-lg border border-[#EEF0EC] dark:border-[#273033] shrink-0">
         <button
           type="button"
           onClick={() => onViewModeChange('edit')}

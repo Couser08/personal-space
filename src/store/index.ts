@@ -7,6 +7,7 @@ import moodReducer from './slices/moodSlice';
 import focusReducer from './slices/focusSlice';
 import uiReducer from './slices/uiSlice';
 import settingsReducer from './slices/settingsSlice';
+import musicReducer from './slices/musicSlice';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     focus: focusReducer,
     ui: uiReducer,
     settings: settingsReducer,
+    music: musicReducer,
   },
 });
 

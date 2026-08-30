@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { Task, Subtask, TaskFilterTab, PriorityLevel } from '../../types/task.types';
+import type { Task, Subtask, TaskFilterTab } from '../../types/task.types';
 import { loadFromStorage, saveToStorage } from '../../utils/storage';
 
 interface TasksState {
@@ -10,8 +10,50 @@ interface TasksState {
   isLoading: boolean;
 }
 
+const defaultInitialTasks: Task[] = [
+  {
+    id: 'demo-task-1',
+    userId: 'local-user',
+    title: 'Mindful Morning Routine & Meditation',
+    description: 'Set daily intentions, hydrate, and practice 10 mins box breathing.',
+    priority: 'high',
+    category: 'Health',
+    dueDate: new Date().toISOString().split('T')[0],
+    dueTime: '08:00 AM',
+    isCompleted: false,
+    position: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    subtasks: [
+      { id: 'sub-1', taskId: 'demo-task-1', title: '10 mins box breathing exercise', isCompleted: true, position: 0, createdAt: new Date().toISOString() },
+      { id: 'sub-2', taskId: 'demo-task-1', title: 'Drink warm lemon water', isCompleted: true, position: 1, createdAt: new Date().toISOString() },
+      { id: 'sub-3', taskId: 'demo-task-1', title: 'Write 3 gratitude notes in journal', isCompleted: false, position: 2, createdAt: new Date().toISOString() },
+    ],
+  },
+  {
+    id: 'demo-task-2',
+    userId: 'local-user',
+    title: 'Design Botanical Calendar & Workflows',
+    description: 'Verify Month, Week carousel, and Day timeline across devices.',
+    priority: 'medium',
+    category: 'Work',
+    dueDate: new Date().toISOString().split('T')[0],
+    dueTime: '11:30 AM',
+    isCompleted: false,
+    position: 1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    subtasks: [
+      { id: 'sub-4', taskId: 'demo-task-2', title: 'Test 2-dropdown filter selectors', isCompleted: true, position: 0, createdAt: new Date().toISOString() },
+      { id: 'sub-5', taskId: 'demo-task-2', title: 'Check dark mode color contrast', isCompleted: false, position: 1, createdAt: new Date().toISOString() },
+    ],
+  },
+];
+
+const loadedTasks = loadFromStorage<Task[]>('tasks_items', []);
+
 const initialState: TasksState = {
-  items: loadFromStorage<Task[]>('tasks_items', []),
+  items: loadedTasks.length > 0 ? loadedTasks : defaultInitialTasks,
   filterTab: 'all',
   selectedCategory: 'All',
   searchQuery: '',
@@ -65,6 +107,7 @@ export const tasksSlice = createSlice({
     addSubtask: (state, action: PayloadAction<{ taskId: string; title: string }>) => {
       const task = state.items.find(t => t.id === action.payload.taskId);
       if (task) {
+        if (!task.subtasks) task.subtasks = [];
         const newSubtask: Subtask = {
           id: crypto.randomUUID ? crypto.randomUUID() : `sub-${Date.now()}`,
           taskId: action.payload.taskId,
@@ -80,7 +123,7 @@ export const tasksSlice = createSlice({
     },
     toggleSubtask: (state, action: PayloadAction<{ taskId: string; subtaskId: string }>) => {
       const task = state.items.find(t => t.id === action.payload.taskId);
-      if (task) {
+      if (task && task.subtasks) {
         const sub = task.subtasks.find(s => s.id === action.payload.subtaskId);
         if (sub) {
           sub.isCompleted = !sub.isCompleted;
@@ -91,7 +134,7 @@ export const tasksSlice = createSlice({
     },
     deleteSubtask: (state, action: PayloadAction<{ taskId: string; subtaskId: string }>) => {
       const task = state.items.find(t => t.id === action.payload.taskId);
-      if (task) {
+      if (task && task.subtasks) {
         task.subtasks = task.subtasks.filter(s => s.id !== action.payload.subtaskId);
         task.updatedAt = new Date().toISOString();
         saveToStorage('tasks_items', state.items);

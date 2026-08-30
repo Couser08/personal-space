@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ProfileSettings } from './ProfileSettings';
 import { ThemeSettings } from './ThemeSettings';
+import { MusicSettings } from './MusicSettings';
 import { DataBackupSettings } from './DataBackupSettings';
 import { AccountSettings } from './AccountSettings';
 
@@ -27,6 +28,7 @@ export const SettingsPage: React.FC = () => {
       <div className="space-y-6">
         <ProfileSettings />
         <ThemeSettings />
+        <MusicSettings />
         <AccountSettings />
         <DataBackupSettings />
       </div>

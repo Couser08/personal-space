@@ -199,12 +199,12 @@ export const AuthModal: React.FC = () => {
         </span>
       </div>
 
-      {/* Auth Navigation Tabs */}
-      <div className="flex bg-[#F7F8F6] dark:bg-[#121516] p-1 rounded-xl border border-[#EEF0EC] dark:border-[#273033] mb-4">
+      {/* Auth Navigation Tabs with compact mobile sizing */}
+      <div className="flex bg-[#F7F8F6] dark:bg-[#121516] p-1 rounded-xl border border-[#EEF0EC] dark:border-[#273033] mb-4 overflow-x-auto no-scrollbar">
         <button
           type="button"
           onClick={() => handleTabChange('signin')}
-          className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 px-1 sm:px-2 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'signin'
               ? 'bg-white dark:bg-[#1A1F21] text-[#1F2937] dark:text-[#F3F4F6] shadow-xs'
               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#1F2937]'
@@ -215,7 +215,7 @@ export const AuthModal: React.FC = () => {
         <button
           type="button"
           onClick={() => handleTabChange('signup')}
-          className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 px-1 sm:px-2 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'signup'
               ? 'bg-white dark:bg-[#1A1F21] text-[#1F2937] dark:text-[#F3F4F6] shadow-xs'
               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#1F2937]'
@@ -226,7 +226,7 @@ export const AuthModal: React.FC = () => {
         <button
           type="button"
           onClick={() => handleTabChange('magiclink')}
-          className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 px-1 sm:px-2 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'magiclink'
               ? 'bg-white dark:bg-[#1A1F21] text-[#1F2937] dark:text-[#F3F4F6] shadow-xs'
               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#1F2937]'
@@ -237,7 +237,7 @@ export const AuthModal: React.FC = () => {
         <button
           type="button"
           onClick={() => handleTabChange('guest')}
-          className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 px-1 sm:px-2 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'guest'
               ? 'bg-white dark:bg-[#1A1F21] text-[#1F2937] dark:text-[#F3F4F6] shadow-xs'
               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#1F2937]'

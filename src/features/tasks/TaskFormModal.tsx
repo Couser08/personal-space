@@ -38,7 +38,7 @@ export const TaskFormModal: React.FC = () => {
         setCategory(editingTask.category);
         setDueDate(editingTask.dueDate || '');
         setDueTime(editingTask.dueTime || '');
-        setSubtasks(editingTask.subtasks.map((s) => s.title));
+        setSubtasks((editingTask.subtasks || []).map((s) => s.title));
       } else {
         setTitle('');
         setDescription('');
@@ -48,6 +48,7 @@ export const TaskFormModal: React.FC = () => {
         setDueTime('');
         setSubtasks([]);
       }
+      setNewSubtaskInput('');
     }
   }, [isOpen, editingTask]);
 
@@ -66,6 +67,21 @@ export const TaskFormModal: React.FC = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
+    // Include any pending text in newSubtaskInput
+    const finalSubtaskTitles = [...subtasks];
+    if (newSubtaskInput.trim()) {
+      finalSubtaskTitles.push(newSubtaskInput.trim());
+    }
+
+    const generatedSubtasks: Subtask[] = finalSubtaskTitles.map((stTitle, idx) => ({
+      id: crypto.randomUUID ? crypto.randomUUID() : `sub-${Date.now()}-${idx}`,
+      taskId: editingTaskId || '',
+      title: stTitle,
+      isCompleted: false,
+      position: idx,
+      createdAt: new Date().toISOString(),
+    }));
+
     if (editingTaskId) {
       dispatch(
         updateTask({
@@ -77,20 +93,12 @@ export const TaskFormModal: React.FC = () => {
             category,
             dueDate: dueDate || undefined,
             dueTime: dueTime || undefined,
+            subtasks: generatedSubtasks,
           },
         })
       );
       dispatch(showToast({ message: 'Task updated successfully', type: 'success' }));
     } else {
-      const initialSubtasks: Subtask[] = subtasks.map((stTitle, idx) => ({
-        id: crypto.randomUUID ? crypto.randomUUID() : `sub-${Date.now()}-${idx}`,
-        taskId: '',
-        title: stTitle,
-        isCompleted: false,
-        position: idx,
-        createdAt: new Date().toISOString(),
-      }));
-
       dispatch(
         addTask({
           userId: 'local-user',
@@ -101,7 +109,7 @@ export const TaskFormModal: React.FC = () => {
           dueDate: dueDate || undefined,
           dueTime: dueTime || undefined,
           isCompleted: false,
-          subtasks: initialSubtasks,
+          subtasks: generatedSubtasks,
         })
       );
       dispatch(showToast({ message: 'New task created', type: 'success' }));

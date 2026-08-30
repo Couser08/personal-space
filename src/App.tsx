@@ -4,10 +4,12 @@ import { DashboardView } from './components/dashboard/DashboardView';
 import { TasksPage } from './features/tasks/TasksPage';
 import { NotesPage } from './features/notes/NotesPage';
 import { SettingsPage } from './features/settings/SettingsPage';
+import { CalendarPage } from './features/calendar/CalendarPage';
 import { TaskFormModal } from './features/tasks/TaskFormModal';
 import { NoteEditorModal } from './features/notes/NoteEditorModal';
 import { MoodNoteModal } from './features/mood/MoodNoteModal';
 import { Toast } from './components/ui/Toast';
+import { FloatingMusicPlayer } from './components/music/FloatingMusicPlayer';
 import { PlaceholderView } from './features/common/PlaceholderView';
 import { useAppDispatch, useAppSelector } from './store';
 import { setUser } from './store/slices/authSlice';
@@ -37,17 +39,19 @@ export const App: React.FC = () => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         dispatch(
           setUser({
             id: session.user.id,
-            email: session.user.email || 'rahul@personal.space',
-            fullName: (session.user.user_metadata?.full_name as string) || 'Rahul',
+            email: session.user.email || 'user@personal.space',
+            fullName: (session.user.user_metadata?.full_name as string) || 'Personal User',
             dailyQuote: 'Small steps every day. Big changes over time. 🌿',
             themePreference: 'light',
           })
         );
+      } else if (event === 'SIGNED_OUT') {
+        dispatch(setUser(null));
       }
     });
 
@@ -67,7 +71,7 @@ export const App: React.FC = () => {
       case 'goals':
         return <PlaceholderView tabName="Goals" />;
       case 'calendar':
-        return <PlaceholderView tabName="Calendar" />;
+        return <CalendarPage />;
       case 'mood':
         return <PlaceholderView tabName="Mood" />;
       default:
@@ -79,10 +83,11 @@ export const App: React.FC = () => {
     <AppLayout>
       {renderActiveView()}
 
-      {/* Global Modals & Notifications */}
+      {/* Global Modals, Widgets & Notifications */}
       <TaskFormModal />
       <NoteEditorModal />
       <MoodNoteModal />
+      <FloatingMusicPlayer />
       <Toast />
     </AppLayout>
   );

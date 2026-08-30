@@ -39,10 +39,10 @@ export const Modal: React.FC<ModalProps> = ({
   }, [isOpen, onClose]);
 
   const maxWidthStyles: Record<string, string> = {
-    sm: 'max-w-sm',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
+    sm: 'sm:max-w-sm',
+    md: 'sm:max-w-lg',
+    lg: 'sm:max-w-2xl',
+    xl: 'sm:max-w-4xl',
   };
 
   const handleClose = () => {
@@ -53,27 +53,34 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6">
+          {/* Frosted Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
           />
 
+          {/* Modal / Native Mobile Bottom Sheet Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-            className={`relative w-full ${maxWidthStyles[maxWidth]} bg-white dark:bg-[#1A1F21] rounded-2xl shadow-float border border-[#EEF0EC] dark:border-[#2E373A] overflow-hidden z-10`}
+            initial={{ y: '100%', opacity: 0.8 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: '100%', opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+            className={`relative w-full ${maxWidthStyles[maxWidth]} max-h-[88vh] sm:max-h-[92vh] flex flex-col bg-white dark:bg-[#1A1F21] rounded-t-3xl sm:rounded-3xl shadow-float border-t sm:border border-[#EEF0EC] dark:border-[#2E373A] overflow-hidden z-10`}
           >
+            {/* Mobile Sheet Drag Handle Pill */}
+            <div className="sm:hidden flex justify-center pt-2.5 pb-1">
+              <div className="w-10 h-1.2 rounded-full bg-black/15 dark:bg-white/20" />
+            </div>
+
             {(title || subtitle) && (
-              <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-[#F0F2EE] dark:border-[#273033]">
+              <div className="flex items-start justify-between px-5 sm:px-6 pt-2 sm:pt-6 pb-3 sm:pb-4 border-b border-[#F0F2EE] dark:border-[#273033] shrink-0">
                 <div>
                   {title && (
-                    <h3 className="font-serif text-xl font-semibold text-[#1F2937] dark:text-[#F3F4F6]">
+                    <h3 className="font-serif text-lg sm:text-xl font-semibold text-[#1F2937] dark:text-[#F3F4F6]">
                       {title}
                     </h3>
                   )}
@@ -85,14 +92,14 @@ export const Modal: React.FC<ModalProps> = ({
                 </div>
                 <button
                   onClick={handleClose}
-                  className="text-[#9CA3AF] hover:text-[#1F2937] dark:hover:text-white p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  className="text-[#9CA3AF] hover:text-[#1F2937] dark:hover:text-white p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             )}
 
-            <div className="p-6">{children}</div>
+            <div className="p-5 sm:p-6 overflow-y-auto max-h-[calc(88vh-70px)] sm:max-h-[calc(92vh-80px)]">{children}</div>
           </motion.div>
         </div>
       )}

@@ -114,8 +114,8 @@ export const NotesPage: React.FC = () => {
 
         {/* Filter Tabs & Color Filters Row */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-          {/* Category Filter Tabs */}
-          <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Category Filter Tabs with smooth mobile swipe */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-full">
             {filterTabs.map((tab) => (
               <button
                 key={tab.id}
@@ -124,7 +124,7 @@ export const NotesPage: React.FC = () => {
                   sound.playClick();
                   setActiveFilter(tab.id);
                 }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer shrink-0 ${
                   activeFilter === tab.id
                     ? 'bg-[#6BAA7A] text-white shadow-xs'
                     : 'bg-[#FAFBF9] dark:bg-[#121516] text-[#4F5D75] dark:text-[#9CA3AF] hover:text-[#1F2937] dark:hover:text-white border border-[#EEF0EC] dark:border-[#2E373A]'
