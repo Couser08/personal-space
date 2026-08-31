@@ -3,6 +3,7 @@ import type { Task, Subtask } from '../types/task.types';
 import type { MusicTrack } from '../store/slices/musicSlice';
 import type { Database } from '../types/supabase.types';
 import { generateUUID, isValidUUID } from '../utils/uuid';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 
 type DbTask = Database['public']['Tables']['tasks']['Row'];
 type DbSubtask = Database['public']['Tables']['subtasks']['Row'];
@@ -11,9 +12,52 @@ type DbProfile = Database['public']['Tables']['profiles']['Row'];
 
 /**
  * Supabase Sync Service
- * Handles multi-device bidirectional synchronization for Tasks, Subtasks, Music, and Profile.
+ * Handles multi-device bidirectional synchronization and Real-Time postgres subscriptions.
  */
 export const supabaseSyncService = {
+  // ----------------------------------------------------
+  // REAL-TIME POSTGRES REPLICATION SUBSCRIPTION
+  // ----------------------------------------------------
+  subscribeToUserRealtime(
+    userId: string,
+    onTasksChange: () => void,
+    onTracksChange: () => void,
+    onProfileChange: () => void
+  ): RealtimeChannel | null {
+    if (!isSupabaseConfigured || !userId) return null;
+
+    try {
+      const channel = supabase
+        .channel(`realtime-user-${userId}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'tasks', filter: `user_id=eq.${userId}` },
+          () => onTasksChange()
+        )
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'subtasks' },
+          () => onTasksChange()
+        )
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'user_music_tracks', filter: `user_id=eq.${userId}` },
+          () => onTracksChange()
+        )
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` },
+          () => onProfileChange()
+        )
+        .subscribe();
+
+      return channel;
+    } catch (err) {
+      console.error('Failed to subscribe to realtime changes:', err);
+      return null;
+    }
+  },
+
   // ----------------------------------------------------
   // TASKS & SUBTASKS
   // ----------------------------------------------------
@@ -50,7 +94,7 @@ export const supabaseSyncService = {
       }
 
       const subtasksByTaskId: Record<string, Subtask[]> = {};
-      (dbSubtasks as DbSubtask[] || []).forEach((st) => {
+      ((dbSubtasks as DbSubtask[]) || []).forEach((st) => {
         if (!subtasksByTaskId[st.task_id]) subtasksByTaskId[st.task_id] = [];
         subtasksByTaskId[st.task_id].push({
           id: st.id,

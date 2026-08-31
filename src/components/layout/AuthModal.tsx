@@ -6,7 +6,10 @@ import { Button } from '../ui/Button';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { closeAuthModal, showToast } from '../../store/slices/uiSlice';
 import { setUser } from '../../store/slices/authSlice';
+import { setTasks } from '../../store/slices/tasksSlice';
+import { setTracks } from '../../store/slices/musicSlice';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { supabaseSyncService } from '../../services/supabaseSyncService';
 import { sound } from '../../lib/sound';
 
 type AuthTab = 'signin' | 'signup' | 'magiclink' | 'guest';
@@ -15,6 +18,8 @@ export const AuthModal: React.FC = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.ui.isAuthModalOpen);
   const currentUser = useAppSelector((state) => state.auth.user);
+  const localTasks = useAppSelector((state) => state.tasks.items);
+  const localTracks = useAppSelector((state) => state.music.tracks);
 
   const [activeTab, setActiveTab] = useState<AuthTab>('signin');
   const [email, setEmail] = useState('');
@@ -111,6 +116,10 @@ export const AuthModal: React.FC = () => {
                 themePreference: 'light',
               })
             );
+
+            // Migrate local data to cloud
+            await supabaseSyncService.syncInitialLocalToCloud(data.user.id, localTasks, localTracks);
+
             sound.playComplete();
             setSuccessMsg(`Account created successfully! Welcome, ${name}.`);
             setTimeout(() => {
@@ -137,23 +146,37 @@ export const AuthModal: React.FC = () => {
         if (error) throw error;
 
         if (data.user) {
-          const userMeta = data.user.user_metadata;
-          const name = userMeta?.full_name || 'Rahul';
+          const profile = await supabaseSyncService.fetchProfile(data.user.id);
+          const name = profile?.full_name || data.user.user_metadata?.full_name || 'Rahul';
+
           dispatch(
             setUser({
               id: data.user.id,
               email: data.user.email || email.trim(),
               fullName: name,
-              dailyQuote: userMeta?.daily_quote || 'Small steps every day. Big changes over time. 🌿',
-              themePreference: 'light',
+              avatarUrl: profile?.avatar_url || undefined,
+              dailyQuote: profile?.daily_quote || 'Small steps every day. Big changes over time. 🌿',
+              themePreference: (profile?.theme_preference as 'light' | 'dark') || 'light',
             })
           );
+
+          // Fetch user's tasks & custom music from cloud
+          const cloudTasks = await supabaseSyncService.fetchTasks(data.user.id);
+          if (cloudTasks.length > 0) {
+            dispatch(setTasks(cloudTasks));
+          }
+
+          const cloudTracks = await supabaseSyncService.fetchMusicTracks(data.user.id);
+          if (cloudTracks.length > 0) {
+            dispatch(setTracks(cloudTracks));
+          }
+
           sound.playComplete();
           setSuccessMsg(`Welcome back, ${name}! Sync is active.`);
           setTimeout(() => {
             dispatch(showToast({ message: `Signed in as ${name}`, type: 'success' }));
             dispatch(closeAuthModal());
-          }, 1000);
+          }, 800);
         }
       } else if (activeTab === 'magiclink') {
         if (!email.trim() || !email.includes('@')) {
