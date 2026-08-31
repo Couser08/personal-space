@@ -198,6 +198,47 @@ export interface Database {
           completed_at?: string;
         };
       };
+      user_music_tracks: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          artist: string | null;
+          url: string;
+          youtube_id: string | null;
+          thumbnail_url: string | null;
+          is_preset: boolean;
+          position: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          artist?: string | null;
+          url: string;
+          youtube_id?: string | null;
+          thumbnail_url?: string | null;
+          is_preset?: boolean;
+          position?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          artist?: string | null;
+          url?: string;
+          youtube_id?: string | null;
+          thumbnail_url?: string | null;
+          is_preset?: boolean;
+          position?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 }

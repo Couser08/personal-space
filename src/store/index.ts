@@ -8,6 +8,7 @@ import focusReducer from './slices/focusSlice';
 import uiReducer from './slices/uiSlice';
 import settingsReducer from './slices/settingsSlice';
 import musicReducer from './slices/musicSlice';
+import { supabaseSyncMiddleware } from './middleware/supabaseSyncMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,8 @@ export const store = configureStore({
     settings: settingsReducer,
     music: musicReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(supabaseSyncMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { loadFromStorage, saveToStorage } from '../../utils/storage';
 import { getYouTubeVideoId, getYouTubeThumbnail } from '../../utils/youtubeUtils';
+import { generateUUID } from '../../utils/uuid';
 
 export type PlayerPreset =
   | 'classic_vinyl'
@@ -28,7 +29,7 @@ interface MusicState {
   playerPreset: PlayerPreset;
 }
 
-const DEFAULT_PRESETS: MusicTrack[] = [
+export const DEFAULT_PRESETS: MusicTrack[] = [
   {
     id: 'preset-lofi-1',
     title: 'Lofi Study Chill',
@@ -85,16 +86,20 @@ export const musicSlice = createSlice({
   name: 'music',
   initialState,
   reducers: {
+    setTracks: (state, action: PayloadAction<MusicTrack[]>) => {
+      state.tracks = action.payload.length > 0 ? action.payload : DEFAULT_PRESETS;
+      saveToStorage('music_tracks', state.tracks);
+    },
     addTrack: (
       state,
-      action: PayloadAction<{ title: string; artist?: string; url: string }>
+      action: PayloadAction<{ title: string; artist?: string; url: string; id?: string }>
     ) => {
       const url = action.payload.url.trim();
       const ytId = getYouTubeVideoId(url);
       const thumbnail = ytId ? getYouTubeThumbnail(ytId) : undefined;
 
       const newTrack: MusicTrack = {
-        id: crypto.randomUUID ? crypto.randomUUID() : `track-${Date.now()}`,
+        id: action.payload.id || generateUUID(),
         title: action.payload.title.trim() || (ytId ? 'YouTube Stream' : 'Custom Audio Stream'),
         artist: action.payload.artist?.trim() || (ytId ? 'YouTube Audio' : 'Custom Audio URL'),
         url,
@@ -159,6 +164,7 @@ export const musicSlice = createSlice({
 });
 
 export const {
+  setTracks,
   addTrack,
   removeTrack,
   resetPresets,
